@@ -51,7 +51,10 @@ def parse_txt_to_firefly_csv(input_file, output_file, skip_positive=True, chunk_
 
                 description = lines[i + 1]
                 pln_line = lines[i + 3]
-                amount = float(pln_line.replace("PLN", "").replace(",", ".").replace(" ", ""))
+                amount = float(pln_line
+                               .replace("PLN", "")
+                               .replace(",", ".")
+                               .replace(" ", ""))
 
                 if skip_positive and amount >= 0:
                     i += 4
@@ -61,7 +64,8 @@ def parse_txt_to_firefly_csv(input_file, output_file, skip_positive=True, chunk_
                 foreign_currency = ""
                 foreign_amount = ""
 
-                if i + 4 < len(lines) and foreign_currency_pattern.fullmatch(lines[i + 4].replace(" ", "")):
+                if (i + 4 < len(lines)
+                        and foreign_currency_pattern.fullmatch(lines[i + 4].replace(" ", ""))):
                     fc_line = lines[i + 4].replace(" ", "").replace(",", ".")
                     foreign_amount = re.findall(r"\d+\.\d{2}", fc_line)[0]
                     foreign_currency = re.findall(r"[A-Z]{3}", fc_line)[-1]
