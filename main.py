@@ -1,4 +1,25 @@
+"""
+Citi Handlowy Transactions to Firefly III CSV Converter
 
+This Python script converts raw bank statement text copied from a web browser  into a structured `.csv` file ready for import into [Firefly III](https://firefly-iii.org/).
+
+Features
+
+- Detects transactions from pasted/exported bank statement text
+- Converts Polish dates (`"19 maj 2025"`) to ISO format (`"2025-05-19"`)
+- Filters out positive (credit) transactions if desired
+- Extracts foreign currency transactions (e.g. `14,00EUR`)
+- Outputs `;`-separated CSV files compatible with Firefly III importer
+- Optionally splits output into chunks (e.g. max 60 transactions per file)
+
+Usage:
+    parse_txt_to_firefly_csv(
+        input_file="statement.txt",
+        output_file="transactions.csv",
+        skip_positive=True,
+        chunk_size=60
+    )
+"""
 import csv
 import os
 import re
@@ -45,7 +66,6 @@ def parse_transactions(lines):
         try:
             date = parse_date(lines[i])
             desc1 = lines[i + 1]
-            desc2 = lines[i + 2]
             amount_line = lines[i + 3]
             foreign_amount = ""
             foreign_currency = ""
