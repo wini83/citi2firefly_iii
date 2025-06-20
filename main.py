@@ -19,7 +19,16 @@ def parse_date(date_str):
     if not match:
         return None
     day, month_pl, year = match.groups()
-    month_pl = month_pl.lower().replace("ą", "a").replace("ć", "c").replace("ę", "e").replace("ł", "l").replace("ń", "n").replace("ó", "o").replace("ś", "s").replace("ź", "z").replace("ż", "z")
+    month_pl = (month_pl.lower().
+                replace("ą", "a")
+                .replace("ć", "c")
+                .replace("ę", "e")
+                .replace("ł", "l")
+                .replace("ń", "n")
+                .replace("ó", "o")
+                .replace("ś", "s")
+                .replace("ź", "z")
+                .replace("ż", "z"))
     month = MONTHS_PL.get(month_pl[:3])
     if not month:
         return None
@@ -80,7 +89,8 @@ def split_transactions(transactions, chunk_size):
 
 def write_csv_chunks(base_filename, chunks):
     for idx, chunk in enumerate(chunks, 1):
-        filename = f"{os.path.splitext(base_filename)[0]}_{idx}.csv" if len(chunks) > 1 else base_filename
+        filename = f"{os.path.splitext(base_filename)[0]}_{idx}.csv" if len(chunks) > 1\
+            else base_filename
         with open(filename, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(
                 f,
