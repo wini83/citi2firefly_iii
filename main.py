@@ -1,110 +1,107 @@
-import csv
-import re
-import os
 
-month_map = {
+import csv
+import os
+import re
+
+
+MONTHS_PL = {
     "sty": "01", "lut": "02", "mar": "03", "kwi": "04",
     "maj": "05", "cze": "06", "lip": "07", "sie": "08",
     "wrz": "09", "paź": "10", "paz": "10", "lis": "11", "gru": "12"
 }
 
-def convert_date(polish_date):
-    parts = polish_date.lower().split()
-    if len(parts) != 3:
-        return polish_date
-    day, month_str, year = parts
-    month = month_map.get(month_str[:3])
+def read_input_file(filename):
+    with open(filename, encoding="utf-8") as f:
+        return [line.strip() for line in f if line.strip()]
+
+def parse_date(date_str):
+    match = re.match(r"(\d{1,2}) ([a-zA-Ząćęłńóśźż]+) (\d{4})", date_str)
+    if not match:
+        return None
+    day, month_pl, year = match.groups()
+    month_pl = month_pl.lower().replace("ą", "a").replace("ć", "c").replace("ę", "e").replace("ł", "l").replace("ń", "n").replace("ó", "o").replace("ś", "s").replace("ź", "z").replace("ż", "z")
+    month = MONTHS_PL.get(month_pl[:3])
     if not month:
-        return polish_date
-    return f"{year}-{month}-{int(day):02d}"
+        return None
+    return f"{year}-{month}-{int(day):02}"
 
-def write_chunk(transactions, filename):
-    with open(filename, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f, delimiter=';')
-        writer.writerow([
-            "date",
-            "description",
-            "amount",
-            "currency",
-            "foreign_currency",
-            "foreign_amount",
-            "opposing_account_name"
-        ])
-        writer.writerows(transactions)
-
-def parse_txt_to_firefly_csv(input_file, output_file, skip_positive=True, chunk_size=None):
-    with open(input_file, 'r', encoding='utf-8') as f:
-        lines = [line.strip() for line in f if line.strip()]
-
+def parse_transactions(lines):
     transactions = []
     i = 0
-
-    date_pattern = re.compile(r"\d{1,2} \w+ \d{4}")
-    foreign_currency_pattern = re.compile(r"-?\d+,\d{2}[A-Z]{3}")
-
     while i < len(lines):
-        line = lines[i]
-        if date_pattern.fullmatch(line.lower()):
-            try:
-                raw_date = line
-                date = convert_date(raw_date)
-
-                description = lines[i + 1]
-                pln_line = lines[i + 3]
-                amount = float(pln_line
-                               .replace("PLN", "")
-                               .replace(",", ".")
-                               .replace(" ", ""))
-
-                if skip_positive and amount >= 0:
-                    i += 4
-                    continue
-
-                currency = "PLN"
-                foreign_currency = ""
-                foreign_amount = ""
-
-                if (i + 4 < len(lines)
-                        and foreign_currency_pattern.fullmatch(lines[i + 4].replace(" ", ""))):
-                    fc_line = lines[i + 4].replace(" ", "").replace(",", ".")
-                    foreign_amount = re.findall(r"\d+\.\d{2}", fc_line)[0]
-                    foreign_currency = re.findall(r"[A-Z]{3}", fc_line)[-1]
-                    i += 5
-                else:
-                    i += 4
-
-                transactions.append([
-                    date,
-                    description,
-                    amount,
-                    currency,
-                    foreign_currency,
-                    foreign_amount,
-                    description  # opposing_account_name
-                ])
-
-            except (IndexError, ValueError) as e:
-                print(f"Skipped malformed transaction at line {i}: {e}")
-                i += 1
-        else:
+        if not parse_date(lines[i]):
             i += 1
+            continue
 
-    if chunk_size is None:
-        # Write all in one file
-        write_chunk(transactions, output_file)
-        print(f"Saved {len(transactions)} transactions to "
-              f"{output_file} (skip_positive={skip_positive})")
-    else:
-        # Split into chunks
-        base, ext = os.path.splitext(output_file)
-        for idx, start in enumerate(range(0, len(transactions), chunk_size), 1):
-            chunk = transactions[start:start + chunk_size]
-            filename = f"{base}_{idx}{ext}"
-            write_chunk(chunk, filename)
+        try:
+            date = parse_date(lines[i])
+            desc1 = lines[i + 1]
+            desc2 = lines[i + 2]
+            amount_line = lines[i + 3]
+            foreign_amount = ""
+            foreign_currency = ""
+
+            if i + 4 < len(lines) and re.match(r"[-+]?[\d,]+[A-Z]{3}", lines[i + 4]):
+                foreign_line = lines[i + 4]
+                foreign_match = re.match(r"([-+]?\d+[\d,]*)\s*([A-Z]{3})", foreign_line)
+                if foreign_match:
+                    foreign_amount = foreign_match.group(1).replace(",", ".")
+                    foreign_currency = foreign_match.group(2)
+                i += 1
+
+            amount_match = re.match(r"([-+]?\d+[\d,]*)PLN", amount_line)
+            if amount_match:
+                amount = amount_match.group(1).replace(",", ".")
+            else:
+                i += 1
+                continue
+
+            transactions.append({
+                "date": date,
+                "description": desc1,
+                "amount": amount,
+                "currency": "PLN",
+                "foreign_currency": foreign_currency,
+                "foreign_amount": foreign_amount,
+                "opposing_account_name": desc1
+            })
+
+            i += 4
+        except (IndexError, ValueError) as e:
+            print(f"Skipped malformed transaction at line {i}: {e}")
+            i += 1
+    return transactions
+
+def filter_transactions(transactions):
+    return [tx for tx in transactions if float(tx["amount"]) < 0]
+
+def split_transactions(transactions, chunk_size):
+    return [transactions[i:i + chunk_size] for i in range(0, len(transactions), chunk_size)]
+
+def write_csv_chunks(base_filename, chunks):
+    for idx, chunk in enumerate(chunks, 1):
+        filename = f"{os.path.splitext(base_filename)[0]}_{idx}.csv" if len(chunks) > 1 else base_filename
+        with open(filename, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(
+                f,
+                fieldnames=[
+                    "date", "description", "amount", "currency",
+                    "foreign_currency", "foreign_amount", "opposing_account_name"
+                ],
+                delimiter=";"
+            )
+            writer.writeheader()
+            writer.writerows(chunk)
             print(f"Saved chunk {idx} "
                   f"with {len(chunk)} transactions to "
-                  f"{filename} (skip_positive={skip_positive})")
+                  f"{filename}")
 
+def parse_txt_to_firefly_csv(input_file, output_file, skip_positive=True, chunk_size=None):
+    lines = read_input_file(input_file)
+    transactions = parse_transactions(lines)
+    if skip_positive:
+        transactions = filter_transactions(transactions)
+    chunks = split_transactions(transactions, chunk_size) if chunk_size else [transactions]
+    write_csv_chunks(output_file, chunks)
 
-
-parse_txt_to_firefly_csv("statement.txt", "firefly_import.csv", chunk_size=60)
+parse_txt_to_firefly_csv("statement.txt", "firefly_import.csv", chunk_size=80)
