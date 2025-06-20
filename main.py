@@ -108,5 +108,3 @@ def parse_txt_to_firefly_csv(input_file, output_file, skip_positive=True, chunk_
 
 
 parse_txt_to_firefly_csv("statement.txt", "firefly_import.csv", chunk_size=60)
-
-# parse_txt_to_firefly_csv("bank_output.txt", "firefly_import.csv", skip_positive=False)
