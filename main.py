@@ -166,8 +166,10 @@ def write_csv_chunks(base_filename, chunks):
         If there's more than one chunk, it appends an index to the filename.
 
         Args:
-            base_filename (str): The base name for the output CSV file(s) (e.g., "transactions.csv").
-            chunks (list): A list of lists, where each inner list is a chunk of transaction dictionaries.
+            base_filename (str): The base name for the output CSV file(s)
+                                (e.g., "transactions.csv").
+            chunks (list): A list of lists, where each inner list
+                                is a chunk of transaction dictionaries.
         """
     for idx, chunk in enumerate(chunks, 1):
         filename = f"{os.path.splitext(base_filename)[0]}_{idx}.csv" if len(chunks) > 1\
