@@ -92,7 +92,8 @@ def parse_txt_to_firefly_csv(input_file, output_file, skip_positive=True, chunk_
     if chunk_size is None:
         # Write all in one file
         write_chunk(transactions, output_file)
-        print(f"Saved {len(transactions)} transactions to {output_file} (skip_positive={skip_positive})")
+        print(f"Saved {len(transactions)} transactions to "
+              f"{output_file} (skip_positive={skip_positive})")
     else:
         # Split into chunks
         base, ext = os.path.splitext(output_file)
@@ -100,7 +101,9 @@ def parse_txt_to_firefly_csv(input_file, output_file, skip_positive=True, chunk_
             chunk = transactions[start:start + chunk_size]
             filename = f"{base}_{idx}{ext}"
             write_chunk(chunk, filename)
-            print(f"Saved chunk {idx} with {len(chunk)} transactions to {filename} (skip_positive={skip_positive})")
+            print(f"Saved chunk {idx} "
+                  f"with {len(chunk)} transactions to "
+                  f"{filename} (skip_positive={skip_positive})")
 
 
 
