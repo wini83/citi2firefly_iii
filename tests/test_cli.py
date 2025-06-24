@@ -5,6 +5,7 @@ from main import run_parser
 
 
 def test_cli_with_sample_data(tmp_path):
+    """Test CLI output with sample input file and temporary output location."""
     # Absolute path to the sample input file
     project_root = Path(__file__).resolve().parent.parent
     input_file = project_root / "sample_data" / "example_input.txt"
