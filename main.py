@@ -29,4 +29,5 @@ def run_parser(input_path, output_name, include_positive, chunk_size):
     click.echo("✅ Done!")
 
 if __name__ == "__main__":
+    # pylint: disable=no-value-for-parameter
     run_parser()
