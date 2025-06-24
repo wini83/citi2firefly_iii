@@ -11,7 +11,7 @@ from bank_parser.csv_exporter import export_to_csv
               help='Base name for output CSV file (without extension).')
 @click.option('--include-positive', is_flag=True, default=False,
               help='Include transactions with positive amounts.')
-@click.option('--chunk-size', default=60, type=int,
+@click.option('--chunk-size', default=None, type=int,
               help='Max number of transactions per CSV file.')
 def run_parser(input_path, output_name, include_positive, chunk_size):
     """
@@ -19,9 +19,9 @@ def run_parser(input_path, output_name, include_positive, chunk_size):
     """
     click.echo(f"📥 Reading: {input_path}")
     with open(input_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+        lines = [line.strip() for line in f if line.strip()]
     click.echo("🔍 Parsing transactions...")
-    transactions = extract_transactions(lines, skip_positive=not include_positive)
+    transactions = extract_transactions(lines, include_positive=include_positive)
     if not transactions:
         click.echo("⚠️ No valid transactions found.")
         return

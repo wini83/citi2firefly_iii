@@ -28,4 +28,4 @@ def test_cli_with_sample_data(tmp_path):
     assert csv_files, "No CSV files were created"
 
     content = csv_files[0].read_text(encoding="utf-8")
-    assert "Date;Amount;Payee" in content
+    assert "date;description;amount;currency;foreign_currency;foreign_amount;opposing_account_name" in content
