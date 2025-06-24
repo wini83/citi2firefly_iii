@@ -31,7 +31,6 @@ def extract_transactions(lines, skip_positive=True):
                 "Notes": ""
             })
         except ValueError:
-        except ValueError:
             pass
         i += 4
     return transactions
