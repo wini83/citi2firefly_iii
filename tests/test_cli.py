@@ -1,7 +1,8 @@
-import os
+"""CLI integration test for main parser tool."""
+from pathlib import Path
 from click.testing import CliRunner
 from main import run_parser
-from pathlib import Path
+
 
 def test_cli_with_sample_data(tmp_path):
     # Absolute path to the sample input file

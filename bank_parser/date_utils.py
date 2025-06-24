@@ -1,3 +1,4 @@
+"""Utility functions for parsing Polish dates into ISO format."""
 from datetime import datetime
 
 MONTHS_PL = {
@@ -19,5 +20,5 @@ def parse_polish_date(date_str):
         if not month:
             return None
         return datetime(int(year), month, day).strftime("%Y-%m-%d")
-    except Exception:
+    except (ValueError, IndexError):
         return None
