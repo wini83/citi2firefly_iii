@@ -1,60 +1,34 @@
-# Citi Handlowy Bank to Firefly III CSV Converter
+# 🏦 Citi Handlowy Bank → Firefly III CSV Converter (CLI Edition)
 
-This Python script converts raw bank statement text copied from a web browser  into a structured `.csv` file ready for import into [Firefly III](https://firefly-iii.org/).
+This Python CLI tool converts raw text exports from bank statements into `.csv` files compatible with [Firefly III](https://firefly-iii.org/).
 
 ## 🔧 Features
 
-- Detects transactions from pasted/exported bank statement text
-- Converts Polish dates (`"19 maj 2025"`) to ISO format (`"2025-05-19"`)
-- Filters out positive (credit) transactions if desired
-- Extracts foreign currency transactions (e.g. `14,00EUR`)
-- Outputs `;`-separated CSV files compatible with Firefly III importer
+- Parses raw statement data (copied from website)
+- Converts Polish dates (e.g. `"19 maj 2025"`) to ISO format (`"2025-05-19"`)
+- Filters out positive (credit) transactions by default
 - Optionally splits output into chunks (e.g. max 60 transactions per file)
+- Fully CLI-based using [`click`](https://palletsprojects.com/p/click/)
+- Easily testable using `pytest`
 
-## 📝 CSV Output Format
+## 🚀 CLI Usage
 
-Each generated CSV file contains the following headers:
-
-```csv
-date;description;amount;currency;foreign_currency;foreign_amount;opposing_account_name
+```bash
+python main.py --input sample_data/example_input.txt --output transactions --chunk-size 60
 ```
 
-Example:
+### 🔁 Parameters
 
-```csv
-2025-05-19;ZABKA POZNAN;-7.50;PLN;;;
-2025-05-18;PASIBUS Sw. Marcin;-98.24;PLN;;;
-```
+| Flag                | Description                                        |
+|---------------------|----------------------------------------------------|
+| `--input`, `-i`     | Path to the input `.txt` file (required)          |
+| `--output`, `-o`    | Output base filename (default: `output`)          |
+| `--chunk-size`      | Number of transactions per file (default: `60`)   |
+| `--include-positive`| Include positive amounts (disabled by default)    |
 
-## 🚀 Usage
+## 📄 Example Input
 
-```python
-from bank_to_firefly import parse_txt_to_firefly_csv
-
-parse_txt_to_firefly_csv(
-    input_file="bank_statement.txt",
-    output_file="firefly_import.csv",
-    skip_positive=True,
-    chunk_size=60  # Optional: split output every 60 transactions
-)
-```
-
-### Parameters
-
-- `input_file` – path to your `.txt` file with raw bank data (copied from website)
-- `output_file` – target CSV filename
-- `skip_positive` – if `True`, skips transactions with positive amounts (default: `True`)
-- `chunk_size` – if set, splits CSV into multiple parts (`file_1.csv`, `file_2.csv`, ...)
-
-## 💡 Notes
-
-- Make sure the input text is cleaned and copied in full from your banking site.
-- Incomplete transactions (e.g. missing lines) will be skipped and logged to console.
-- Opposing account name is inferred from the transaction description.
-
-## 📁 Example File Input
-
-```
+```text
 19 maj 2028
 ZABKA Z9999 K.2 POZNAN PL
 ZABKA Z9999 K.2 POZNAN PL
@@ -66,19 +40,59 @@ Seabank Hotel Mellieha MT
 5,00EUR
 ```
 
-## 📦 Installation
+## 📤 Output Format
 
-No package needed. Just clone and run:
+Each `.csv` file contains the following columns:
 
-```bash
-
-git clone https://github.com/wini83/citi2firefly_iii.git
-cd citi2firefly_iii
-python3 main.py
+```csv
+Date;Amount;Payee;Description;Category;Source account;Destination account;Tags;Notes
 ```
 
-> You need Python 3.7+ installed.
+Example:
 
-## 📝 License
+```csv
+2025-05-19;-7.50;ZABKA POZNAN;ZABKA POZNAN;;;Bank;ZABKA POZNAN;;
+```
+
+## 📁 Project Structure
+
+```
+bank_parser_project/
+├── main.py
+├── parser/
+│   ├── __init__.py
+│   ├── date_utils.py
+│   ├── transaction_extractor.py
+│   └── csv_exporter.py
+├── tests/
+│   ├── __init__.py
+│   └── test_cli.py
+├── sample_data/
+│   └── example_input.txt
+└── requirements.txt
+```
+
+## 🧪 Running Tests
+
+```bash
+pip install -r requirements.txt
+pytest
+```
+
+Tests are implemented with `click.testing.CliRunner` to validate end-to-end usage.
+
+## 📦 Installation
+
+No installation required. Just clone and run:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/citi2firefly_iii.git
+cd citi2firefly_iii
+python main.py --input your_file.txt
+```
+
+> Requires Python 3.7+
+
+## 📄 License
 
 MIT License

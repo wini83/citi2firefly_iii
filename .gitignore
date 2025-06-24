@@ -124,3 +124,8 @@ fabric.properties
 *.txt
 /*.json
 /*.csv
+/data/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
