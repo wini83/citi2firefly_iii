@@ -1,5 +1,8 @@
 # 🏦 Citi Handlowy Bank → Firefly III CSV Converter (CLI Edition)
 
+[![Python application](https://github.com/wini83/citi2firefly_iii/actions/workflows/python-app.yml/badge.svg)](https://github.com/wini83/citi2firefly_iii/actions/workflows/python-app.yml)
+[![Pylint](https://github.com/wini83/citi2firefly_iii/actions/workflows/pylint.yml/badge.svg)](https://github.com/wini83/citi2firefly_iii/actions/workflows/pylint.yml)
+
 This Python CLI tool converts raw text exports from bank statements into `.csv` files compatible with [Firefly III](https://firefly-iii.org/).
 
 ## 🔧 Features
