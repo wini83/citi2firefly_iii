@@ -1,6 +1,7 @@
 """Exports parsed transaction data to CSV files compatible with Firefly III."""
 import csv
 
+
 def export_to_csv(transactions, base_filename="output", chunk_size=60):
     """Exports parsed transaction data to CSV files compatible with Firefly III."""
     headers = [

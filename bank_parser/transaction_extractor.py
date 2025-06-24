@@ -1,6 +1,7 @@
 """Parses lines of text and extracts transaction entries."""
 from bank_parser.date_utils import parse_polish_date
 
+
 def extract_transactions(lines, skip_positive=True):
     """
     Parses raw text lines to extract transaction dictionaries.

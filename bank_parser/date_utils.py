@@ -6,6 +6,7 @@ MONTHS_PL = {
     "lip": 7, "sie": 8, "wrz": 9, "paź": 10, "paz": 10, "lis": 11, "gru": 12
 }
 
+
 def parse_polish_date(date_str):
     """
     Converts Polish-formatted date (e.g., '16 sty 2025') to ISO format ('2025-01-16').

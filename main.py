@@ -3,6 +3,7 @@ import click
 from bank_parser.transaction_extractor import extract_transactions
 from bank_parser.csv_exporter import export_to_csv
 
+
 @click.command()
 @click.option('--input', '-i', 'input_path', required=True, type=click.Path(exists=True),
               help='Path to input .txt file with raw bank data.')
@@ -27,6 +28,7 @@ def run_parser(input_path, output_name, include_positive, chunk_size):
     click.echo(f"💾 Exporting {len(transactions)} transactions to CSV...")
     export_to_csv(transactions, base_filename=output_name, chunk_size=chunk_size)
     click.echo("✅ Done!")
+
 
 if __name__ == "__main__":
     # pylint: disable=no-value-for-parameter
