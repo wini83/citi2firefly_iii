@@ -1,4 +1,4 @@
-from parser.date_utils import parse_polish_date
+from bank_parser.date_utils import parse_polish_date
 
 def extract_transactions(lines, skip_positive=True):
     """

@@ -1,7 +1,7 @@
-import os
+"""CLI tool to convert raw bank exports to Firefly III-compatible CSV files."""
 import click
-from parser.transaction_extractor import extract_transactions
-from parser.csv_exporter import export_to_csv
+from bank_parser.transaction_extractor import extract_transactions
+from bank_parser.csv_exporter import export_to_csv
 
 @click.command()
 @click.option('--input', '-i', 'input_path', required=True, type=click.Path(exists=True),
