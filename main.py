@@ -1,5 +1,8 @@
 """CLI tool to convert raw bank exports to Firefly III-compatible CSV files."""
+import glob
 import click
+
+from bank_parser.summarizer import summarize_exports
 from bank_parser.transaction_extractor import extract_transactions
 from bank_parser.csv_exporter import export_to_csv
 
@@ -28,6 +31,7 @@ def run_parser(input_path, output_name, include_positive, chunk_size):
     click.echo(f"💾 Exporting {len(transactions)} transactions to CSV...")
     export_to_csv(transactions, base_filename=output_name, chunk_size=chunk_size)
     click.echo("✅ Done!")
+    summarize_exports(output_name)
 
 
 if __name__ == "__main__":
