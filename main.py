@@ -1,5 +1,4 @@
 """CLI tool to convert raw bank exports to Firefly III-compatible CSV files."""
-import glob
 import click
 
 from bank_parser.summarizer import summarize_exports

@@ -1,3 +1,4 @@
+"""Module for summarizing exported CSV transactions (file count, date range, etc.)."""
 import glob
 import csv
 from datetime import datetime
@@ -21,7 +22,7 @@ def summarize_exports(base_filename: str):
             click.echo(f"✔ '{file}': {len(dates)} transactions "
                        f"({min_date} to {max_date})")
 
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             click.echo(f"⚠️ Could not summarize '{file}': {e}")
 
 @click.command()
@@ -31,4 +32,5 @@ def cli(base_filename):
     summarize_exports(base_filename)
 
 if __name__ == "__main__":
+    # pylint: disable=no-value-for-parameter
     cli()
