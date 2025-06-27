@@ -24,7 +24,7 @@ def test_cli_with_sample_data(tmp_path):
     assert result.exit_code == 0, result.output
     assert "Exporting" in result.output
 
-    csv_files = list(tmp_path.glob("*.csv")) + list(tmp_path.glob("*.csv"))
+    csv_files = list(tmp_path.glob("*.csv"))
     assert csv_files, "No CSV files were created"
 
     content = csv_files[0].read_text(encoding="utf-8")
